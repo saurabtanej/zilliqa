@@ -14,14 +14,14 @@ jobs:
     build-and-push:
         runs-on: ubuntu-latest
         steps:
-         - name: Checkout knote repo
+          - name: Checkout knote repo
             id: checkout-knote-repo
             uses: actions/checkout@v2
             with:
-                fetch-depth: 0
-                repository: 'learnk8s/knote-js'
-                ref: master
-                path: '04-05'
+              fetch-depth: 0
+              repository: 'learnk8s/knote-js'
+              ref: master
+              path: '04-05'
 
           - name: Extract application version
             id: gitversion
