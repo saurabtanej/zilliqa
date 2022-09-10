@@ -14,3 +14,7 @@ aws-eks-iam-role-sa:
 k8s-external-dns:
   source: https://github.com/lablabs/terraform-aws-eks-external-dns.git
   version: v0.9.0
+
+aws-document-db:
+  source: https://github.com/cloudposse/terraform-aws-documentdb-cluster.git
+  version: master
