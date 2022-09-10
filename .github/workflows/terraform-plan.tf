@@ -1,0 +1,142 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: run-terraform-plan
+
+jobs:
+  plan-config:
+    name: Review changes
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        state-file:
+          [
+            "setup",
+            "k8s",
+            "services/knote"
+          ]
+    defaults:
+      run:
+        working-directory: ${{ matrix.state-file }}
+    steps:
+    # Uncomment it after the first run, as it was commented because it was never run
+    #   - name: Wait for Running apply
+    #     uses: lewagon/wait-on-check-action@v1.0.0
+    #     with:
+    #       ref: master
+    #       check-name: "Plan and apply (${{ matrix.state-file }})"
+    #       repo-token: ${{ secrets.GITHUB_TOKEN }}
+    #       wait-interval: 10
+    #       allowed-conclusions: success,skipped,cancelled,failure
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup terragrunt
+        uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: 0.38.0
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.2.6
+          terraform_wrapper: false
+
+      - name: Setup tflint
+        uses: terraform-linters/setup-tflint@v1.1.0
+        with:
+          tflint_version: v0.20.3
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup aws-cli
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2
+        continue-on-error: false
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: "v1.19.3"
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Setup xterrafile
+        run: |
+          curl -O -L https://github.com/devopsmakers/xterrafile/releases/download/v2.3.1/xterrafile_2.3.1_Linux_x86_64.tar.gz
+          tar vxf xterrafile_2.3.1_Linux_x86_64.tar.gz -C /runner/_work/_tool/
+          echo "/runner/_work/_tool/" >> $GITHUB_PATH
+
+      - name: Create AWS profile
+        uses: Fooji/create-aws-profile-action@v1
+        with:
+          profile: zilliqa-infra
+          region: eu-west-1
+          key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Set auth credentials
+        run: |
+          git config --local --remove-section http."https://github.com/"
+          git config --global url."https://x-oauth-basic:${INFRA_COMMON_REPO_TOKEN}@github.com/saurabtanej".insteadOf "https://github.com/saurabtanej"
+        env:
+          INFRA_COMMON_REPO_TOKEN: ${{ secrets.INFRA_COMMON_REPO_TOKEN }}
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check -recursive .
+
+      - name: Tflint
+        run: tflint
+
+      - name: Terraform init
+        run: terragrunt init 
+
+      - name: Terraform plan
+        id: plan
+        env:
+          SKIP_INIT: true
+        run: |
+          terragrunt plan --terragrunt-log-level error -no-color -out=tfplan_resources_planned | tee /tmp/plan.txt
+          exit_code=${PIPESTATUS[0]}
+          sed -i '/Refreshing state.../d' /tmp/plan.txt
+          grep -Ei "Plan:|No changes" /tmp/plan.txt | tee /tmp/output.txt || true
+          exit $exit_code
+
+      - name: Comment on PR
+        uses: actions/github-script@v4.1.0
+        if: always()
+        continue-on-error: true
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("fs");
+            const plan = fs.readFileSync("/tmp/plan.txt", "utf8");
+            const plan_output = fs.readFileSync("/tmp/output.txt", "utf8");
+            const output = `⚙️ **Working Directory**: \`${{ matrix.state-file }}\`
+            🖌 **Terraform Format and Style**: ${{ steps.fmt.outcome == 'success' && '✅' || '❌' }}
+            🖌 **OPA Validation**: ${{ steps.validate.outcome == 'success' && '✅' || '❌' }}
+            📖 **Terraform Plan**: ${{ steps.plan.outcome == 'success' && '✅' || '❌' }}
+            🧑‍💻 **Pusher**: @${{ github.actor }}
+            **Summary**: \`${ plan_output }\`
+            <details><summary>Show Plan</summary>
+            \`\`\`
+            ${ plan }
+            \`\`\`
+            </details>
+            `;
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })

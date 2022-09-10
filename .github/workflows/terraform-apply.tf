@@ -1,0 +1,95 @@
+name: Deploy terraform
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: run-terraform-apply
+
+jobs:
+  apply-config:
+    name: Plan and apply
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        state-file:
+          [
+            "setup",
+            "k8s",
+            "services/knote"
+          ]
+    defaults:
+      run:
+        working-directory: ${{ matrix.state-file }}
+    steps:
+    # Uncomment it when first run is applied
+    #   - name: Wait for any ongoing action execution to finish
+    #     uses: softprops/turnstyle@v1
+    #     with:
+    #       same-branch-only: false
+    #     env:
+    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup terragrunt
+        uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: 0.38.0
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.2.6
+
+      - name: Setup aws-cli
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2
+        continue-on-error: false
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: "v1.19.3"
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Setup xterrafile
+        run: |
+          curl -O -L https://github.com/devopsmakers/xterrafile/releases/download/v2.3.1/xterrafile_2.3.1_Linux_x86_64.tar.gz
+          tar vxf xterrafile_2.3.1_Linux_x86_64.tar.gz -C /runner/_work/_tool/
+          echo "/runner/_work/_tool/" >> $GITHUB_PATH
+      - name: Create AWS profile
+        uses: Fooji/create-aws-profile-action@v1
+        with:
+          profile: zilliqa-infra
+          region: eu-west-1
+          key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Set auth credentials
+        run: |
+          git config --local --remove-section http."https://github.com/"
+          git config --global url."https://x-oauth-basic:${INFRA_COMMON_REPO_TOKEN}@github.com/saurabtanej".insteadOf "https://github.com/saurabtanej"
+        env:
+          INFRA_COMMON_REPO_TOKEN: ${{ secrets.INFRA_COMMON_REPO_TOKEN }}
+
+      - name: Terraform init
+        run: terragrunt init
+
+      - name: Terragrunt plan
+        env:
+          SKIP_INIT: true
+        run: terragrunt plan -input=false -out=/tmp/tfplan
+
+    #   - name: Terragrunt apply
+    #     env:
+    #       SKIP_INIT: true
+    #     run: terragrunt apply -input=false /tmp/tfplan
