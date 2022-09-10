@@ -1,0 +1,16 @@
+aws-vpc:
+  source: https://github.com/terraform-aws-modules/terraform-aws-vpc.git
+  version: v3.14.4
+
+aws-eks:
+  source: https://github.com/terraform-aws-modules/terraform-aws-eks.git
+  version: v18.20.2
+
+aws-eks-iam-role-sa:
+  source: https://github.com/terraform-aws-modules/terraform-aws-iam.git
+  version: v4.24.1
+  path: modules/iam-role-for-service-accounts-eks
+
+k8s-external-dns:
+  source: https://github.com/lablabs/terraform-aws-eks-external-dns.git
+  version: v0.9.0
