@@ -64,8 +64,8 @@ jobs:
       - name: Setup xterrafile
         run: |
           curl -O -L https://github.com/devopsmakers/xterrafile/releases/download/v2.3.1/xterrafile_2.3.1_Linux_x86_64.tar.gz
-          tar vxf xterrafile_2.3.1_Linux_x86_64.tar.gz -C /runner/_work/_tool/
-          echo "/runner/_work/_tool/" >> $GITHUB_PATH
+          tar vxf xterrafile_2.3.1_Linux_x86_64.tar.gz -C /usr/local/bin
+          echo "/usr/local/bin" >> $GITHUB_PATH
       - name: Create AWS profile
         uses: Fooji/create-aws-profile-action@v1
         with:
