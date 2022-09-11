@@ -86,8 +86,6 @@ jobs:
                 tags: ${{ env.VERSIONED_IMAGE }}
                 push: true
                 load: false
-                cache-from: type=local,src=/tmp/.buildx-cache
-                cache-to: type=local,dest=/tmp/.buildx-cache
                 build-args: |
                     PERSONAL_ACCESS_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}
                     APP_VERSION=${{ steps.gitversion.outputs.assemblySemVer }}
