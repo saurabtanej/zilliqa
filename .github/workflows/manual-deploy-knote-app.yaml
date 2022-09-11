@@ -12,6 +12,11 @@ jobs:
     build-and-push:
         runs-on: ubuntu-latest
         steps:
+          - uses: actions/checkout@v2
+            id: checkout
+            with:
+              fetch-depth: 0
+              
           - name: Checkout knote repo
             id: checkout-knote-repo
             uses: actions/checkout@v2
