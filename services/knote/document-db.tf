@@ -22,8 +22,8 @@ module "documentdb_cluster" {
   zone_id                    = data.terraform_remote_state.setup.outputs.zone_id
   apply_immediately          = true
   auto_minor_version_upgrade = true
-  allowed_security_groups         = data.terraform_remote_state.k8s.outputs.cluster_security_group_id
-  allowed_security_groups         = var.allowed_security_groups
+  allowed_security_groups    = data.terraform_remote_state.k8s.outputs.cluster_security_group_id
+  # allowed_security_groups         = var.allowed_security_groups
   allowed_cidr_blocks             = [local.vpc_cidr]
   snapshot_identifier             = var.snapshot_identifier
   retention_period                = local.retention_period
