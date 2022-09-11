@@ -176,5 +176,5 @@ output "igw_arn" {
 # Rout53 Hosted zone
 output "private_hosted_zone" {
   description = "Private Hosted Zone name"
-  value       = aws_route53_zone.private.name
+  value       = aws_route53_zone.private.zone_id
 }

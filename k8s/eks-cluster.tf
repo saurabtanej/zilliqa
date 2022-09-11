@@ -25,9 +25,9 @@ module "eks" {
     vpc-cni = {
       resolve_conflicts = "OVERWRITE"
     }
-    aws-ebs-csi-driver = {
-      resolve_conflicts = "OVERWRITE"
-    }
+    # aws-ebs-csi-driver = {
+    #   resolve_conflicts = "OVERWRITE"
+    # }
   }
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {
@@ -94,10 +94,11 @@ module "eks" {
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
-    ami_type                     = "BOTTLEROCKET_x86_64"
-    platform                     = "bottlerocket"
-    disk_size                    = local.eks_managed_default_disk_size
-    instance_types               = ["c5.xlarge", "c5d.xlarge", "r5.xlarge", "c5a.xlarge"]
+    ami_type  = "BOTTLEROCKET_x86_64"
+    platform  = "bottlerocket"
+    disk_size = local.eks_managed_default_disk_size
+    # instance_types               = ["c5.xlarge", "c5d.xlarge", "r5.xlarge", "c5a.xlarge"]
+    instance_types               = ["t2.micro"]
     capacity_type                = "SPOT"
     min_size                     = local.default_node_group_min
     max_size                     = local.default_node_group_max
@@ -121,8 +122,9 @@ module "eks" {
     }
 
     apps = {
-      iam_role_name  = "app-node"
-      instance_types = ["m5.xlarge", "m5a.xlarge", "m4.xlarge"]
+      iam_role_name = "app-node"
+      # instance_types = ["m5.xlarge", "m5a.xlarge", "m4.xlarge"]
+      instance_types = ["t2.micro"]
 
       labels = {
         node = "apps"

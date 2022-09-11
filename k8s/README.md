@@ -1,5 +1,6 @@
 # Zilliqa K8s setup
-This state file is created for all K8s setup including the addons. This state file is using setup state file to get vpc and subnet information
+This state file is created for all K8s setup including the addons. This state file is using setup state file to get vpc and subnet information.
+EKS managed node groups are created with containerd runtime and bottlerocket AMI which is designed for considering containerizing in mind
 
 ## Requirements
 

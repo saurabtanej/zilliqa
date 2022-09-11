@@ -25,14 +25,14 @@ jobs:
         working-directory: ${{ matrix.state-file }}
     steps:
     # Uncomment it after the first run, as it was commented because it was never run
-    #   - name: Wait for Running apply
-    #     uses: lewagon/wait-on-check-action@v1.0.0
-    #     with:
-    #       ref: master
-    #       check-name: "Plan and apply (${{ matrix.state-file }})"
-    #       repo-token: ${{ secrets.GITHUB_TOKEN }}
-    #       wait-interval: 10
-    #       allowed-conclusions: success,skipped,cancelled,failure
+      - name: Wait for Running apply
+        uses: lewagon/wait-on-check-action@v1.0.0
+        with:
+          ref: master
+          check-name: "Plan and apply (${{ matrix.state-file }})"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success,skipped,cancelled,failure
 
       - name: Checkout repo
         uses: actions/checkout@v2

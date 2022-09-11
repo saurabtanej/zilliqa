@@ -25,12 +25,12 @@ jobs:
         working-directory: ${{ matrix.state-file }}
     steps:
     # Uncomment it when first run is applied
-    #   - name: Wait for any ongoing action execution to finish
-    #     uses: softprops/turnstyle@v1
-    #     with:
-    #       same-branch-only: false
-    #     env:
-    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Wait for any ongoing action execution to finish
+        uses: softprops/turnstyle@v1
+        with:
+          same-branch-only: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout repo
         uses: actions/checkout@v2
