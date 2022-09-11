@@ -82,7 +82,7 @@ jobs:
             uses: docker/build-push-action@v2
             with:
                 builder: ${{ steps.buildx.outputs.name }}
-                context: 04-05/Dockerfile
+                context: .
                 tags: ${{ env.VERSIONED_IMAGE }}
                 push: true
                 load: false
