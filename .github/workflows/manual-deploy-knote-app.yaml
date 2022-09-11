@@ -155,6 +155,6 @@ jobs:
             id: deploy
             run: |
                 aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
-                cd 04-05
+                cd 04-05/04-05/kube
                 kubectl apply -f .
             
