@@ -18,7 +18,7 @@ module "documentdb_cluster" {
   instance_class             = local.instance_class
   db_port                    = 27017
   vpc_id                     = data.terraform_remote_state.setup.outputs.vpc_id
-  subnet_ids                 = data.terraform_remote_state.setup.outputs.private_subnets
+  subnet_ids                 = data.terraform_remote_state.setup.outputs.database_subnets
   zone_id                    = data.terraform_remote_state.setup.outputs.private_hosted_zone
   apply_immediately          = true
   auto_minor_version_upgrade = true
