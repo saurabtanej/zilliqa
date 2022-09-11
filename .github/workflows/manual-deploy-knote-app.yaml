@@ -87,6 +87,7 @@ jobs:
           - name: debug working directory
             run: |
               echo $PWD
+              cd 04-05
               ls -lart
 
           # - name: Build Image
@@ -138,7 +139,7 @@ jobs:
           - name: Deploy to kubernetes cluster
             id: deploy
             run: |
-                aws eks update-kubeconfig --name ${{ env.APPLICATION_NAME }} --region ${{ env.AWS_REGION }}
+                aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
                 cd 04-05
                 kubectl apply -f .
             
