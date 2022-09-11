@@ -90,16 +90,16 @@ jobs:
               cd 04-05
               ls -lart
 
-          # - name: Build Image
-          #   id: build-docker
-          #   uses: docker/build-push-action@v2
-          #   with:
-          #       builder: ${{ steps.buildx.outputs.name }}
-          #       context: ./04-05/
-          #       file: ./04-05/Dockerfile
-          #       tags: ${{ env.VERSIONED_IMAGE }}
-          #       push: true
-          #       load: false
+          - name: Build Image
+            id: build-docker
+            uses: docker/build-push-action@v2
+            with:
+                builder: ${{ steps.buildx.outputs.name }}
+                context: ./04-05/04-05/
+                file: ./04-05/04-05/Dockerfile
+                tags: ${{ env.VERSIONED_IMAGE }}
+                push: true
+                load: false
 
     deploy_app:
         needs: build-and-push
