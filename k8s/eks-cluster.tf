@@ -1,7 +1,7 @@
 locals {
   eks_managed_default_disk_size = 50
-  default_node_group_min        = 1
-  default_node_group_desired    = 1
+  default_node_group_min        = 2
+  default_node_group_desired    = 2
   default_node_group_max        = 5
   additional_policies = [
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
@@ -25,9 +25,9 @@ module "eks" {
     vpc-cni = {
       resolve_conflicts = "OVERWRITE"
     }
-    # aws-ebs-csi-driver = {
-    #   resolve_conflicts = "OVERWRITE"
-    # }
+    aws-ebs-csi-driver = {
+      resolve_conflicts = "OVERWRITE"
+    }
   }
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {
