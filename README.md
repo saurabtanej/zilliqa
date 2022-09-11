@@ -11,3 +11,6 @@ Although, once setup is completed, we should run all pipelines together and henc
 Readme of all states are also updated. 
 
 This repo also consist of different workflows for auto auto applying the changes when merged. And it also has a pipeline for deploying an app (knote for testing). 
+
+
+<img width="1021" alt="image" src="https://user-images.githubusercontent.com/99720728/189544512-342447b5-2357-4454-b0d5-b1b1c731dd17.png">
