@@ -1,7 +1,7 @@
 locals {
   eks_managed_default_disk_size = 50
-  default_node_group_min        = 2
-  default_node_group_desired    = 2
+  default_node_group_min        = 1
+  default_node_group_desired    = 1
   default_node_group_max        = 5
   additional_policies = [
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
@@ -114,7 +114,6 @@ module "eks" {
       labels = {
         node = "infrastructure"
       }
-      desired_size = 2
       # taints = [{
       #   key    = "node"
       #   value  = "infrastructure"
@@ -130,7 +129,7 @@ module "eks" {
       labels = {
         node = "apps"
       }
-      desired_size = 2
+
       # taints = [{
       #   key    = "node"
       #   value  = "apps"
