@@ -114,6 +114,7 @@ module "eks" {
       labels = {
         node = "infrastructure"
       }
+      desired_size = 2
       # taints = [{
       #   key    = "node"
       #   value  = "infrastructure"
@@ -129,7 +130,7 @@ module "eks" {
       labels = {
         node = "apps"
       }
-
+      desired_size = 2
       # taints = [{
       #   key    = "node"
       #   value  = "apps"
