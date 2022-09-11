@@ -40,6 +40,12 @@ terraform.rc
 */global_locals.tf
 **/vendor/*
 
+*/*/backend.tf
+*/*/.tflint.hcl
+*/*/.terraform-version
+*/*/global_locals.tf
+**/vendor/*
+
 src/terraform.tfvars.bak
 .idea
 .vscode/settings.json
